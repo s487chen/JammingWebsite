@@ -3,19 +3,23 @@ import React from 'react';
 import SearchResults from '../SearchResults/SearchResults';
 import SearchBar from '../SearchBar/SearchBar';
 import Playlist from '../Playlist/Playlist';
+import Spotify from '../../util/Spotify';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {searchResults:[{id:23, name:'Test', artist:'pink', album:'try'},{id:11, name:'Hahaha', artist:'grey', album:'temp'}],
+    this.state = {searchResults:[
+    ],
                   playlistName: 'My Favorite songs',
-                  playlistTracks: [{id:0, name:'Stronger', artist:'pink', album:'try'}]
+                  playlistTracks: [],
+                  term:""
                   };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
+    this.handleTermChange = this.handleTermChange.bind(this);
   }
 
   addTrack(track) {
@@ -36,17 +40,20 @@ class App extends React.Component {
   savePlaylist() {
     const trackURIs = this.state.playlistTracks.map(track=>track.uri);
   }
-  search(txt) {
-    console.log(txt);
-
+  async search(txt) {
+    const Results = await Spotify.search(txt);
+    this.setState({searchResults: Results});
   }
 
+  handleTermChange(txt) {
+    this.setState({term:txt});
+  }
   render() {
     return (
       <div>
         <h1>Ja<span className="highlight">mmm</span>ing</h1>
         <div className="App">
-          <SearchBar onSearch={this.search} />
+          <SearchBar onNameChange={this.handleTermChange} onSearch={this.search} term={this.state.term} />
           <div className="App-playlist">
             <SearchResults onAdd={this.addTrack} searchResults = {this.state.searchResults} />
             <Playlist onSave={this.savePlaylist} onNameChange={this.updatePlaylistName} onRemove={this.removeTrack} playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
