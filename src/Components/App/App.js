@@ -39,6 +39,8 @@ class App extends React.Component {
   }
   savePlaylist() {
     const trackURIs = this.state.playlistTracks.map(track=>track.uri);
+    const isSuccess =Spotify.savePlaylist(this.state.playlistName,trackURIs);
+    if(isSuccess!==false) this.setState({playlistName:'New Playlist', playlistTracks:[]});
   }
   async search(txt) {
     const Results = await Spotify.search(txt);
